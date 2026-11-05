@@ -192,7 +192,8 @@ textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; 
 
 <script>
 (() => {
-  const API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/podbor";
+  // Регион задан явно: из Азии (Сеул, Мумбай) запросы к Битриксу зависают, см. docs/podbor/kandidaty-portal.md в репо коннектора.
+  const API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/podbor?forceFunctionRegion=eu-central-1";
   const q = new URLSearchParams(location.search);
   const V = q.get("v") || "";
   const ISTOCHNIK = q.get("s") || "";
