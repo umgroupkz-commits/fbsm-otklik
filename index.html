@@ -249,6 +249,7 @@ textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; 
     osh.hidden = true;
     kn.disabled = true; kn.textContent = "Отправляем…";
     try {
+      if (!$("#galka").checked) throw new Error("Чтобы отправить отклик, отметьте согласие на обработку данных.");
       const f = $("#fayl").files[0];
       let fayl = null;
       if (f) {
