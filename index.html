@@ -117,6 +117,9 @@ textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; 
 .dok { border-top: 0; padding-top: 0; }
 .soglasie .tusk { margin-bottom: 10px; }
 .gotovo:focus { outline: none; }
+#intervyu > * + * { margin-top: 12px; }
+#intervyu button { width: 100%; margin-top: 8px; }
+#iv-vopros { font-size: 16px; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -167,9 +170,23 @@ textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; 
     <button class="glavnaya" id="otpravit" type="submit">Отправить отклик</button>
   </form>
 
+  <section id="intervyu" class="blok" hidden>
+    <div class="metka">ИИ-помощник FBSM</div>
+    <p>Здравствуйте! Я ИИ-помощник FBSM по подбору персонала. Задам несколько вопросов о вакансии, это займёт пару минут. Если удобнее поговорить с человеком, нажмите кнопку внизу, и с вами свяжется HR-менеджер.</p>
+    <p class="tusk" id="iv-zagruzka" role="status">Подбираю вопросы…</p>
+    <div id="iv-oshibka" class="soobshenie oshibka" role="alert" hidden></div>
+    <div id="iv-blok" hidden>
+      <div class="tusk" id="iv-schet" aria-live="polite"></div>
+      <label class="pole"><span id="iv-vopros"></span><textarea id="iv-otvet" rows="3" maxlength="1000"></textarea></label>
+      <button class="glavnaya" id="iv-dalshe" type="button">Ответить</button>
+      <button class="vtorostep" id="iv-propusk" type="button">Пропустить вопрос</button>
+    </div>
+    <button class="vtorostep" id="iv-chelovek" type="button">Хочу поговорить с человеком</button>
+  </section>
+
   <section id="gotovo" class="blok gotovo" hidden tabindex="-1">
     <strong>Отклик отправлен</strong>
-    <span class="tusk">Спасибо! HR-менеджер посмотрит его и свяжется с вами, если опыт подойдёт.</span>
+    <span class="tusk" id="gotovo-tekst">Спасибо! HR-менеджер посмотрит его и свяжется с вами, если опыт подойдёт.</span>
   </section>
 </main>
 
@@ -257,15 +274,14 @@ textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; 
         if (p.blob.size > MAX) throw new Error("Файл больше 10 МБ. Сожмите PDF или сфотографируйте заново.");
         fayl = { name: p.name, mime: p.mime, b64: await vB64(p.blob) };
       }
-      await zapros({
+      const otvet = await zapros({
         action: "otklik", v: V, istochnik: ISTOCHNIK,
         fio: fo.fio.value, telefon: fo.telefon.value, email: fo.email.value, oSebe: fo.oSebe.value, sayt: fo.sayt.value,
         soglasie: $("#galka").checked, fayl,
       });
       fo.hidden = true;
       $("#podzagolovok").hidden = true;
-      $("#gotovo").hidden = false;
-      $("#gotovo").focus();
+      if (otvet.intervyu) nachatIntervyu(otvet.intervyu); else pokazatGotovo();
     } catch (err) {
       osh.textContent = err.message; osh.hidden = false;
       osh.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -273,6 +289,66 @@ textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; 
       kn.disabled = false; kn.textContent = "Отправить отклик";
     }
   });
+
+  function pokazatGotovo(chelovek) {
+    $("#intervyu").hidden = true;
+    if (chelovek) $("#gotovo-tekst").textContent = "Хорошо, дальше с вами будет общаться человек. HR-менеджер свяжется с вами.";
+    $("#gotovo").hidden = false;
+    $("#gotovo").focus();
+  }
+
+  const iv = { t: "", voprosy: [], i: 0 };
+
+  function pokazatVopros() {
+    $("#iv-zagruzka").hidden = true;
+    $("#iv-schet").textContent = `Вопрос ${iv.i + 1} из ${iv.voprosy.length}`;
+    $("#iv-vopros").textContent = iv.voprosy[iv.i];
+    $("#iv-otvet").value = "";
+    $("#iv-blok").hidden = false;
+    $("#iv-otvet").focus();
+  }
+
+  async function nachatIntervyu(t) {
+    iv.t = t;
+    $("#intervyu").hidden = false;
+    $("#intervyu").scrollIntoView({ block: "start" });
+    try {
+      const s = await zapros({ action: "intervyuStart", t });
+      if (s.gotovo || !s.voprosy.length) return pokazatGotovo();
+      iv.voprosy = s.voprosy; iv.i = s.otvetov;
+      pokazatVopros();
+    } catch {
+      pokazatGotovo(); // Отклик уже сохранён: без вопросов HR всё равно его увидит.
+    }
+  }
+
+  async function otpravitOtvet(telo) {
+    const knopki = document.querySelectorAll("#intervyu button"), osh = $("#iv-oshibka");
+    osh.hidden = true;
+    knopki.forEach((b) => { b.disabled = true; });
+    try {
+      const r = await zapros({ action: "intervyuOtvet", t: iv.t, i: iv.i, ...telo });
+      if (r.chelovek) return pokazatGotovo(true);
+      if (r.gotovo) return pokazatGotovo();
+      iv.i = r.otvetov;
+      pokazatVopros();
+    } catch (e) {
+      osh.textContent = e.message; osh.hidden = false;
+    } finally {
+      knopki.forEach((b) => { b.disabled = false; });
+    }
+  }
+
+  $("#iv-dalshe").addEventListener("click", () => {
+    if (!$("#iv-otvet").value.trim()) {
+      $("#iv-oshibka").textContent = "Напишите ответ или нажмите «Пропустить вопрос».";
+      $("#iv-oshibka").hidden = false;
+      return;
+    }
+    otpravitOtvet({ tekst: $("#iv-otvet").value });
+  });
+  $("#iv-propusk").addEventListener("click", () => otpravitOtvet({ tekst: "" }));
+  $("#iv-chelovek").addEventListener("click", () => otpravitOtvet({ chelovek: true }));
 
   $("#povtor").addEventListener("click", otkryt);
   otkryt();
