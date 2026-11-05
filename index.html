@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Отклик на вакансию - FBSM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --fon: #f3f5f2;
+  --list: #ffffff;
+  --tekst: #17201d;
+  --tusk: #5b6762;
+  --liniya: #d8ddd8;
+  --shtamp: #0f6b5c;
+  --shtamp-svet: #e2f0ec;
+  --vnimanie: #a4501a;
+  --vnimanie-svet: #fbeee4;
+  --oshibka: #b42318;
+  --radius: 10px;
+  --shrift: "Golos Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fon: #121815;
+    --list: #1b231f;
+    --tekst: #e8eeea;
+    --tusk: #9aa8a1;
+    --liniya: #2e3a35;
+    --shtamp: #4fb8a3;
+    --shtamp-svet: #16302a;
+    --vnimanie: #e59a62;
+    --vnimanie-svet: #33241a;
+    --oshibka: #f07a6f;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--fon); color: var(--tekst);
+  font: 400 16px/1.5 var(--shrift);
+  padding: 0 16px calc(32px + env(safe-area-inset-bottom));
+}
+main { max-width: 560px; margin: 0 auto; }
+h1 { font-size: 24px; line-height: 1.25; font-weight: 700; margin: 0 0 8px; text-wrap: balance; }
+h2 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+p { margin: 0 0 12px; }
+.metka { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--tusk); font-weight: 600; }
+.shapka { padding: 28px 0 8px; }
+.tusk { color: var(--tusk); font-size: 14px; }
+
+/* Шкала: по клетке на каждый пункт. */
+.shkala { position: sticky; top: 0; z-index: 2; background: var(--fon); padding: 12px 0; margin-bottom: 8px; }
+.shkala-verh { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.schet { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.schet span { color: var(--tusk); font-size: 18px; font-weight: 500; }
+.kletki { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+.kletka { height: 8px; border-radius: 2px; background: var(--liniya); transition: background .3s; }
+.kletka.da { background: var(--shtamp); }
+
+.blok { background: var(--list); border: 1px solid var(--liniya); border-radius: var(--radius); padding: 20px 16px; margin-bottom: 16px; }
+.blok > p.tusk { margin-bottom: 16px; }
+label.pole { display: block; margin-bottom: 14px; }
+label.pole > span { display: block; font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+input[type=text], input[type=tel], input[type=email], input[type=date], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--tekst);
+  background: var(--list); border: 1px solid var(--liniya); border-radius: 8px;
+}
+input.ii { border-color: var(--shtamp); background: var(--shtamp-svet); }
+input:focus-visible, select:focus-visible, button:focus-visible, .knopka-fayl:focus-within {
+  outline: 3px solid var(--shtamp); outline-offset: 2px;
+}
+.podskazka-ii { font-size: 13px; color: var(--shtamp); margin: -8px 0 12px; }
+
+button, .knopka-fayl {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 18px; border-radius: 8px; font: 600 16px/1 var(--shrift);
+  cursor: pointer; border: 1px solid transparent;
+}
+.glavnaya { background: var(--shtamp); color: #fff; width: 100%; }
+@media (prefers-color-scheme: dark) { .glavnaya { color: #0b1210; } }
+.vtorostep { background: transparent; color: var(--shtamp); border-color: var(--shtamp); }
+button[disabled] { opacity: .55; cursor: progress; }
+
+.dok { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--liniya); }
+.dok:first-of-type { border-top: 0; }
+.dok-nazv { font-weight: 500; }
+.dok-podsk { grid-column: 1; font-size: 13px; color: var(--tusk); }
+.status { grid-column: 1; font-size: 13px; font-weight: 600; }
+.status.da { color: var(--shtamp); }
+.status.net { color: var(--tusk); font-weight: 500; }
+.knopka-fayl { grid-column: 2; grid-row: 1 / span 3; background: transparent; color: var(--shtamp); border-color: var(--shtamp); padding: 0 14px; font-size: 15px; position: relative; }
+.knopka-fayl.zagruzka { opacity: .6; pointer-events: none; }
+.knopka-fayl input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.zamechanie { grid-column: 1 / -1; background: var(--vnimanie-svet); color: var(--vnimanie); border-radius: 6px; padding: 8px 10px; font-size: 14px; }
+
+.soglasie label { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; font-size: 15px; }
+.soglasie input { width: 24px; height: 24px; flex: none; margin-top: 2px; accent-color: var(--shtamp); }
+
+.soobshenie { padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 15px; }
+.soobshenie.ok { background: var(--shtamp-svet); color: var(--shtamp); }
+.soobshenie.oshibka { background: var(--vnimanie-svet); color: var(--oshibka); }
+.gotovo { text-align: center; padding: 28px 16px; }
+.gotovo strong { display: block; font-size: 20px; margin-bottom: 6px; color: var(--shtamp); }
+[hidden] { display: none !important; }
+.zagl { color: var(--tusk); padding: 48px 0; text-align: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+textarea {
+  width: 100%; padding: 10px 12px; font: inherit; color: var(--tekst); resize: vertical;
+  background: var(--list); border: 1px solid var(--liniya); border-radius: 8px;
+}
+textarea:focus-visible { outline: 3px solid var(--shtamp); outline-offset: 2px; }
+.lovushka { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.dok { border-top: 0; padding-top: 0; }
+.soglasie .tusk { margin-bottom: 10px; }
+.gotovo:focus { outline: none; }
+</style>
+</head>
+<body>
+<main>
+  <header class="shapka">
+    <div class="metka">FBSM · отклик на вакансию</div>
+    <h1 id="zagolovok">Отклик на вакансию</h1>
+    <p class="tusk" id="podzagolovok" hidden>Это займёт пару минут. Первым резюме читает ИИ-помощник, а решение принимает HR-менеджер.</p>
+  </header>
+
+  <div id="zagruzka" class="zagl">Открываем вакансию…</div>
+
+  <div id="zakryto" class="blok" hidden>
+    <h2>Отклик сейчас недоступен</h2>
+    <p id="zakryto-tekst" class="tusk"></p>
+    <button class="vtorostep" id="povtor" type="button" hidden>Попробовать ещё раз</button>
+  </div>
+
+  <form id="forma" novalidate hidden>
+    <div id="oshibka" class="soobshenie oshibka" role="alert" hidden></div>
+
+    <section class="blok">
+      <label class="pole"><span>Фамилия и имя</span><input type="text" name="fio" autocomplete="name" required></label>
+      <label class="pole"><span>Телефон</span><input type="tel" name="telefon" autocomplete="tel" inputmode="tel" placeholder="+7 701 234 56 78" required></label>
+      <label class="pole"><span>Почта, если есть</span><input type="email" name="email" autocomplete="email" inputmode="email"></label>
+      <div class="lovushka" aria-hidden="true"><label>Сайт <input type="text" name="sayt" tabindex="-1" autocomplete="off"></label></div>
+    </section>
+
+    <section class="blok">
+      <h2>Резюме</h2>
+      <p class="tusk">Приложите файл или коротко напишите о себе. Хватит чего-то одного.</p>
+      <div class="dok">
+        <div class="dok-nazv">Файл резюме</div>
+        <div class="dok-podsk" id="fayl-imya">PDF или фото, до 10 МБ</div>
+        <label class="knopka-fayl">Выбрать<input type="file" id="fayl" accept="image/*,application/pdf" aria-label="Выбрать файл резюме"></label>
+      </div>
+      <label class="pole"><span>О себе</span><textarea name="oSebe" rows="4" maxlength="4000" placeholder="Где работали и чем занимались, какой график вам подходит"></textarea></label>
+    </section>
+
+    <section class="blok soglasie">
+      <h2>Согласие на обработку данных</h2>
+      <p class="tusk">Откликаясь на вакансию FBSM, вы соглашаетесь, что ИП Абсолют обрабатывает ваши персональные данные: ФИО, контакты, резюме, ответы на вопросы и открытые публикации о вас в интернете и соцсетях. Цель - подбор на эту и похожие вакансии FBSM. Срок - 1 год или до отзыва согласия.</p>
+      <p class="tusk">Данные обрабатываются с помощью искусственного интеллекта, в том числе сервисом Anthropic (США). Это трансграничная передача данных, на неё вы тоже даёте согласие.</p>
+      <p class="tusk">Решение о приглашении на собеседование или об отказе принимает сотрудник FBSM, а не ИИ. Вы можете возразить против решения, попросить общаться с сотрудником вместо ИИ или отозвать согласие: <span id="kontakt">напишите HR-менеджеру</span>.</p>
+      <label><input type="checkbox" id="galka"><span>Согласен(на) на обработку персональных данных на этих условиях</span></label>
+    </section>
+
+    <button class="glavnaya" id="otpravit" type="submit">Отправить отклик</button>
+  </form>
+
+  <section id="gotovo" class="blok gotovo" hidden tabindex="-1">
+    <strong>Отклик отправлен</strong>
+    <span class="tusk">Спасибо! HR-менеджер посмотрит его и свяжется с вами, если опыт подойдёт.</span>
+  </section>
+</main>
+
+<script>
+(() => {
+  const API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/podbor";
+  const q = new URLSearchParams(location.search);
+  const V = q.get("v") || "";
+  const ISTOCHNIK = q.get("s") || "";
+  const MAX = 10 * 1024 * 1024;
+  const $ = (s) => document.querySelector(s);
+
+  async function zapros(telo) {
+    const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(telo) });
+    let j = {};
+    try { j = await r.json(); } catch { /* ответ не JSON */ }
+    if (!r.ok || !j.ok) throw new Error(j.error || "Нет связи. Проверьте интернет и попробуйте ещё раз.");
+    return j;
+  }
+
+  function pokazatZakryto(tekst, povtor) {
+    $("#zagruzka").hidden = true;
+    $("#zakryto-tekst").textContent = tekst;
+    $("#zakryto").hidden = false;
+    $("#povtor").hidden = !povtor;
+  }
+
+  async function otkryt() {
+    $("#zagruzka").hidden = false;
+    $("#zakryto").hidden = true;
+    if (!V) return pokazatZakryto("В ссылке нет вакансии. Откройте её из объявления целиком.", false);
+    try {
+      const s = await zapros({ action: "vakansiya", v: V });
+      if (!s.otkryto) return pokazatZakryto(s.soobshenie, false);
+      $("#zagolovok").textContent = s.dolzhnost + (s.gorod ? ", " + s.gorod : "");
+      if (s.kontakt) $("#kontakt").textContent = "напишите " + s.kontakt;
+      $("#podzagolovok").hidden = false;
+      $("#zagruzka").hidden = true;
+      $("#forma").hidden = false;
+    } catch (e) {
+      pokazatZakryto(e.message, true);
+    }
+  }
+
+  const vB64 = (blob) => new Promise((ok, ne) => {
+    const r = new FileReader();
+    r.onload = () => ok(String(r.result).split(",")[1]);
+    r.onerror = () => ne(new Error("Не получилось прочитать файл. Выберите его ещё раз."));
+    r.readAsDataURL(blob);
+  });
+
+  /** Большое фото и HEIC с iPhone уменьшаем до JPEG прямо на телефоне. */
+  async function podgotovit(f) {
+    const foto = f.type.startsWith("image/");
+    const nado = foto && (f.size > 3 * 1024 * 1024 || /hei[cf]/i.test(f.type));
+    if (!nado) return { name: f.name, mime: f.type, blob: f };
+    try {
+      const bm = await createImageBitmap(f);
+      const k = Math.min(1, 2000 / Math.max(bm.width, bm.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
+      c.getContext("2d").drawImage(bm, 0, 0, c.width, c.height);
+      const blob = await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.85));
+      if (blob) return { name: f.name.replace(/\.[^.]+$/, "") + ".jpg", mime: "image/jpeg", blob };
+    } catch { /* браузер не смог, отправим как есть */ }
+    return { name: f.name, mime: f.type, blob: f };
+  }
+
+  $("#fayl").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    $("#fayl-imya").textContent = f ? f.name : "PDF или фото, до 10 МБ";
+  });
+
+  $("#forma").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fo = e.target, kn = $("#otpravit"), osh = $("#oshibka");
+    osh.hidden = true;
+    kn.disabled = true; kn.textContent = "Отправляем…";
+    try {
+      const f = $("#fayl").files[0];
+      let fayl = null;
+      if (f) {
+        const p = await podgotovit(f);
+        if (p.blob.size > MAX) throw new Error("Файл больше 10 МБ. Сожмите PDF или сфотографируйте заново.");
+        fayl = { name: p.name, mime: p.mime, b64: await vB64(p.blob) };
+      }
+      await zapros({
+        action: "otklik", v: V, istochnik: ISTOCHNIK,
+        fio: fo.fio.value, telefon: fo.telefon.value, email: fo.email.value, oSebe: fo.oSebe.value, sayt: fo.sayt.value,
+        soglasie: $("#galka").checked, fayl,
+      });
+      fo.hidden = true;
+      $("#podzagolovok").hidden = true;
+      $("#gotovo").hidden = false;
+      $("#gotovo").focus();
+    } catch (err) {
+      osh.textContent = err.message; osh.hidden = false;
+      osh.scrollIntoView({ block: "center", behavior: "smooth" });
+    } finally {
+      kn.disabled = false; kn.textContent = "Отправить отклик";
+    }
+  });
+
+  $("#povtor").addEventListener("click", otkryt);
+  otkryt();
+})();
+</script>
+</body>
+</html>
